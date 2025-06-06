@@ -52,13 +52,13 @@ def format_nuclei(filename):
     return "\n".join(output)
 
 def main():
-    bandit = load_json("bandit-report.json")
-    semgrep = load_json("semgrep-report.json")
+    bandit = load_json("../reports/bandit-report.json")
+    semgrep = load_json("../reports/semgrep-report.json")
 
     report = []
     report.append(format_bandit(bandit))
     report.append(format_semgrep(semgrep))
-    report.append(format_nuclei("nuclei-report.json"))
+    report.append(format_nuclei("../reports/nuclei-report.json"))
 
     with open("final-security-report.txt", "w") as f:
         f.write("\n\n".join(report))
