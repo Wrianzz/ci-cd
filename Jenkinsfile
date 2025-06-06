@@ -92,6 +92,7 @@ pipeline {
 
           if (hasHigh) {
             sendDiscord("❌ **DAST failed**: High/Critical ditemukan saat Nuclei scan.")
+            sh "docker rm -f vulnapp || true"
             sh "curl -F \"file=@${FINAL_REPORT}\" ${DISCORD_WEBHOOK}"
             error("Stopping pipeline due to high/critical issues in DAST.")
           }
