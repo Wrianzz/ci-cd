@@ -6,7 +6,7 @@ pipeline {
   }
 
   environment {
-    REPO_URL = "git@github.com:Wrianzz/ci-cd-done.git"
+    REPO_URL = "git@github.com:Wrianzz/ci-cd.git"
     PROJECT_DIR = "ci-cd-done"
     BANDIT_REPORT = "reports/bandit-report.json"
     SEMGREP_REPORT = "reports/semgrep-report.json"
