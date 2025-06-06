@@ -1,12 +1,16 @@
 import json
 import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+REPORT_DIR = os.path.join(BASE_DIR, "..", "reports")
+
 def load_json(filename):
+    full_path = os.path.join(REPORT_DIR, filename)
     try:
-        with open(filename) as f:
+        with open(full_path) as f:
             return json.load(f)
     except Exception as e:
-        print(f"[!] Error reading {filename}: {e}")
+        print(f"[!] Error reading {full_path}: {e}")
         return None
 
 def format_bandit(data):
@@ -34,6 +38,7 @@ def format_semgrep(data):
     return "\n".join(output)
 
 def format_nuclei(filename):
+    full_path = os.path.join(REPORT_DIR, filename)
     output = ["\n=== Nuclei Report ==="]
     if not os.path.exists(filename):
         output.append("Report not found.")
@@ -52,17 +57,18 @@ def format_nuclei(filename):
     return "\n".join(output)
 
 def main():
-    bandit = load_json("../reports/bandit-report.json")
-    semgrep = load_json("../reports/semgrep-report.json")
+    bandit = load_json("bandit-report.json")
+    semgrep = load_json("semgrep-report.json")
 
     report = []
     report.append(format_bandit(bandit))
     report.append(format_semgrep(semgrep))
     report.append(format_nuclei("../reports/nuclei-report.json"))
 
-    with open("final-security-report.txt", "w") as f:
+    output_path = os.path.join(REPORT_DIR, "final-security-report.txt")
+    with open(output_path, "w") as f:
         f.write("\n\n".join(report))
-
+    
     print("[✓] Final security report saved as final-security-report.txt")
 
 if __name__ == "__main__":
