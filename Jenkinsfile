@@ -6,8 +6,8 @@ pipeline {
   }
 
   environment {
-    REPO_URL = "git@github.com:Wrianzz/ci-cd.git"
-    PROJECT_DIR = "ci-cd"
+    REPO_URL = "git@github.com:Wrianzz/ci-cd-done.git"
+    PROJECT_DIR = "ci-cd-done"
     BANDIT_REPORT = "reports/bandit-report.json"
     SEMGREP_REPORT = "reports/semgrep-report.json"
     NUCLEI_REPORT = "reports/nuclei-report.json"
@@ -45,12 +45,10 @@ pipeline {
           def highBandit = sh(script: "grep -iE '\"issue_severity\":\\s*\"HIGH\"|\"CRITICAL\"' ${BANDIT_REPORT}", returnStatus: true) == 0
           def highSemgrep = sh(script: "grep -iE '\"severity\":\\s*\"ERROR\"|\"HIGH\"|\"CRITICAL\"' ${SEMGREP_REPORT}", returnStatus: true) == 0
 
-          sh 'python3 scripts/generate_report.py'
-
-          sendDiscord("❌ *SAST failed*: High/Critical vulnerability ditemukan. Laporan terlampir.")
-          sh "curl -F \"file=@${FINAL_REPORT}\" ${DISCORD_WEBHOOK}"
-
           if (highBandit || highSemgrep) {
+            sh 'python3 scripts/generate_report.py'
+            sendDiscord("❌ **SAST failed**: High/Critical vulnerability ditemukan. Laporan terlampir.")
+            sh "curl -F \"file=@${FINAL_REPORT}\" ${DISCORD_WEBHOOK}"
             error("Stopping pipeline due to high/critical issues in SAST.")
           }
         }
@@ -93,7 +91,7 @@ pipeline {
           sh 'python3 scripts/generate_report.py'
 
           if (hasHigh) {
-            sendDiscord("❌ *DAST failed*: High/Critical ditemukan saat Nuclei scan.")
+            sendDiscord("❌ **DAST failed**: High/Critical ditemukan saat Nuclei scan.")
             sh "curl -F \"file=@${FINAL_REPORT}\" ${DISCORD_WEBHOOK}"
             error("Stopping pipeline due to high/critical issues in DAST.")
           }
@@ -104,7 +102,7 @@ pipeline {
     stage('Notify Developer') {
       steps {
         script {
-          sendDiscord("✅ *Pipeline passed*: Tidak ditemukan critical issue. Laporan akhir terlampir.")
+          sendDiscord("✅ **Pipeline passed**: Tidak ditemukan critical issue. Laporan akhir terlampir.")
           sh "curl -F \"file=@${FINAL_REPORT}\" ${DISCORD_WEBHOOK}"
         }
       }
