@@ -45,7 +45,7 @@ pipeline {
           def highBandit = sh(script: "grep -iE '\"issue_severity\":\\s*\"HIGH\"|\"CRITICAL\"' ${BANDIT_REPORT}", returnStatus: true) == 0
           def highSemgrep = sh(script: "grep -iE '\"severity\":\\s*\"ERROR\"|\"HIGH\"|\"CRITICAL\"' ${SEMGREP_REPORT}", returnStatus: true) == 0
 
-          sh 'python3 /scripts/generate_report.py'
+          sh 'python3 scripts/generate_report.py'
 
           sendDiscord("❌ *SAST failed*: High/Critical vulnerability ditemukan. Laporan terlampir.")
           sh "curl -F \"file=@${FINAL_REPORT}\" ${DISCORD_WEBHOOK}"
@@ -90,7 +90,7 @@ pipeline {
         script {
           def hasHigh = sh(script: "grep -i '\"severity\":\"high\"\\|\"severity\":\"critical\"' ${NUCLEI_REPORT}", returnStatus: true) == 0
 
-          sh 'python3 /scripts/generate_report.py'
+          sh 'python3 scripts/generate_report.py'
 
           if (hasHigh) {
             sendDiscord("❌ *DAST failed*: High/Critical ditemukan saat Nuclei scan.")
