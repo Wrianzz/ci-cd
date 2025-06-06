@@ -63,7 +63,7 @@ def main():
     report = []
     report.append(format_bandit(bandit))
     report.append(format_semgrep(semgrep))
-    report.append(format_nuclei("../reports/nuclei-report.json"))
+    report.append(format_nuclei("nuclei-report.json"))
 
     output_path = os.path.join(REPORT_DIR, "final-security-report.txt")
     with open(output_path, "w") as f:
