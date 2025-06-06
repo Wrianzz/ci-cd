@@ -40,12 +40,12 @@ def format_semgrep(data):
 def format_nuclei(filename):
     full_path = os.path.join(REPORT_DIR, filename)
     output = ["\n=== Nuclei Report ==="]
-    if not os.path.exists(filename):
+    if not os.path.exists(full_path):
         output.append("Report not found.")
         return "\n".join(output)
 
     try:
-        with open(filename) as f:
+        with open(full_path) as f:
             for line in f:
                 data = json.loads(line)
                 severity = data.get("info", {}).get("severity", "UNKNOWN").upper()
