@@ -23,7 +23,7 @@ Proyek ini merupakan demonstrasi implementasi **Secure CI/CD Pipeline** dengan i
 
 Berikut adalah tahapan dalam Secure CI/CD Workflow:
 
-![CI/CD Workflow](https://i.imgur.com/kcVDTGy.png)
+![CI/CD Workflow](https://imgur.com/a/65mHAx2)
 
 1. **Checkout dari GitHub**
 2. **Run SAST (Static Application Security Testing)**
@@ -42,21 +42,6 @@ Berikut adalah tahapan dalam Secure CI/CD Workflow:
 
 8. **Jika semua lolos:**  
    Kirim notifikasi sukses + hasil security report ke Discord.
-
----
-
-## 📂 Struktur Repository
-
-.
-├── app.py # Aplikasi dummy untuk pengujian
-├── users.db # SQLite dummy database
-├── requirements.txt # Dependency Python dummy app
-├── Dockerfile # Konfigurasi Docker
-├── Jenkinsfile # Pipeline otomatis dengan integrasi keamanan
-├── scripts/
-│ └── generate_report.py # Script untuk notifikasi/report ke Discord
-└── README.md
-
 
 ---
 
