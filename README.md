@@ -23,8 +23,6 @@ Proyek ini merupakan demonstrasi implementasi **Secure CI/CD Pipeline** dengan i
 
 Berikut adalah tahapan dalam Secure CI/CD Workflow:
 
-![CI/CD Workflow](https://imgur.com/a/65mHAx2)
-
 1. **Checkout dari GitHub**
 2. **Run SAST (Static Application Security Testing)**
    - `Semgrep`
