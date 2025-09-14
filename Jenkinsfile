@@ -1,11 +1,6 @@
 pipeline {
   agent any
 
-  // Trigger saat git push (butuh GitHub plugin / webhook)
-  triggers {
-    githubPush()
-  }
-
   environment {
     REPO_URL           = "https://github.com/Wrianzz/ci-cd.git" 
     PROJECT_DIR        = "ci-cd"
