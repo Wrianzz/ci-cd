@@ -7,7 +7,7 @@ pipeline {
   }
 
   environment {
-    REPO_URL           = "git@github.com:Wrianzz/ci-cd.git"
+    REPO_URL           = "https://github.com/Wrianzz/ci-cd.git" 
     PROJECT_DIR        = "ci-cd"
     REPORT_DIR         = "reports"
     BANDIT_REPORT      = "reports/bandit-report.json"
@@ -18,7 +18,7 @@ pipeline {
     NUCLEI_REPORT      = "reports/nuclei-report.json"
     FINAL_REPORT       = "reports/final-security-report.txt"
     DISCORD_WEBHOOK    = credentials('discord-webhook-url')
-    DOCKER_IMAGE       = "flask-vuln-app:latest"
+    DOCKER_IMAGE       = "flask-vuln-app"
     CONTAINER_NAME     = "vulnapp"
   }
 
@@ -26,19 +26,17 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        sshagent (credentials: ['github-ssh-key']) {
-          sh """
-            rm -rf \${PROJECT_DIR}
-            git clone \${REPO_URL}
-            mkdir -p \${REPORT_DIR} flags
+        sh """
+          rm -rf ${PROJECT_DIR}
+          git clone --depth=1 ${REPO_URL} ${PROJECT_DIR}
+          mkdir -p ${REPORT_DIR} flags
           """
-        }
       }
     }
 
-    stage('Security Scans (Parallel)') {
+    stage('Security Scans') {
       parallel {
-        stage('SAST - Bandit & Semgrep (Repo-wide)') {
+        stage('SAST - Bandit & Semgrep') {
           steps {
             sh """
               cd \${PROJECT_DIR}
@@ -50,7 +48,7 @@ pipeline {
           }
         }
 
-        stage('Vulnerability (Filesystem) - Anchore Grype') {
+        stage('SCA - Anchore Grype') {
           steps {
             sh """
               cd \${PROJECT_DIR}
@@ -103,26 +101,25 @@ pipeline {
         """
       }
     }
+    
+    stage('Trivy Image Scan') {
+      steps {
+        sh """
+          # Scan image, simpan semua temuan (vuln & secret) sebagai JSON
+          trivy image --format json --output \${TRIVY_IMAGE_REPORT} --ignore-unfixed --scanners vuln,secret \${DOCKER_IMAGE} || true
 
+          # Tandai jika ada HIGH/CRITICAL
+          grep -iqE '\\"Severity\\":\\s*\\"HIGH\\"|\\"Severity\\":\\s*\\"CRITICAL\\"' \${TRIVY_IMAGE_REPORT} && touch flags/trivy_high || true
+        """
+      }
+    }
+    
     stage('Deploy') {
       steps {
         sh """
           docker rm -f \${CONTAINER_NAME} || true
           docker run -d -p 5000:5000 --name \${CONTAINER_NAME} \${DOCKER_IMAGE}
           sleep 5
-        """
-      }
-    }
-
-    // Trivy setelah deploy (sesuai permintaan)
-    stage('Trivy Image Scan') {
-      steps {
-        sh """
-          # Scan image; simpan semua temuan (vuln & secret) sebagai JSON
-          trivy image --format json --output \${TRIVY_IMAGE_REPORT} --ignore-unfixed --scanners vuln,secret \${DOCKER_IMAGE} || true
-
-          # Tandai jika ada HIGH/CRITICAL
-          grep -iqE '\\"Severity\\":\\s*\\"HIGH\\"|\\"Severity\\":\\s*\\"CRITICAL\\"' \${TRIVY_IMAGE_REPORT} && touch flags/trivy_high || true
         """
       }
     }
@@ -140,7 +137,6 @@ pipeline {
         script {
           def hasHigh = sh(script: "grep -i '\\\"severity\\\":\\\"high\\\"\\|\\\"severity\\\":\\\"critical\\\"' \${NUCLEI_REPORT}", returnStatus: true) == 0
 
-          // Bangun report akhir (pakai script kamu)
           sh 'python3 scripts/generate_report.py || true'
 
           if (hasHigh) {
