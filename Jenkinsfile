@@ -16,11 +16,10 @@ pipeline {
     DOCKER_IMAGE       = "flask-vuln-app"
     CONTAINER_NAME     = "vulnapp"
 
-    // ==== DefectDojo settings (ISI sesuai environment kamu) ====
-    DD_URL             = 'https://defectdojo.example.com'          // contoh
-    DD_PRODUCT_NAME    = 'Flask Vuln App'                           // contoh
-    ENGAGEMENT_NAME    = 'CI Security Scans'                        // contoh
-    DD_CREDENTIALS_ID  = 'defectdojo-api-token'                     // Jenkins credentialsId (Secret Text berisi API Token)
+    DD_URL             = 'http://localhost:8280'
+    DD_PRODUCT_NAME    = 'DevSecOps'
+    ENGAGEMENT_NAME    = 'App Build'
+    DD_CREDENTIALS_ID  = 'DD_API_KEY'
   }
 
   stages {
