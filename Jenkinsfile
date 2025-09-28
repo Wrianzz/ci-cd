@@ -64,9 +64,9 @@ pipeline {
           steps {
             sh """
               if [ -d "\${PROJECT_DIR}/.git" ]; then
-                trufflehog git --json \${PROJECT_DIR} > \${TRUFFLEHOG_REPORT} || true
+                sudo trufflehog git --json \${PROJECT_DIR} > \${TRUFFLEHOG_REPORT} || true
               else
-                trufflehog filesystem --directory \${PROJECT_DIR} --json > \${TRUFFLEHOG_REPORT} || true
+                sudo trufflehog filesystem --directory \${PROJECT_DIR} --json > \${TRUFFLEHOG_REPORT} || true
               fi
             """
           }
