@@ -17,7 +17,8 @@ pipeline {
     CONTAINER_NAME     = "vulnapp"
 
     DD_URL             = 'http://localhost:8280'
-    DD_PRODUCT_NAME    = 'DevSecOps'
+    DD_PRODUCT_TYPE    = 'DevSecOps'
+    DD_PRODUCT_NAME    = 'DevSecOps-Product'
     ENGAGEMENT_NAME    = 'App Build'
     DD_CREDENTIALS_ID  = 'DD_API_KEY'
   }
@@ -178,7 +179,7 @@ pipeline {
             'Bandit Scan'          : false,
             'Semgrep JSON Report'  : false,
             'Anchore Grype'        : false,
-            'Trufflehog Scan'      : true,   // temuan secret → tandai verified
+            'Trufflehog Scan'      : true,
             'Trivy Scan'           : false,
             'Nuclei Scan'          : false
           ]
@@ -214,6 +215,7 @@ pipeline {
                   curl -sS -X POST "\${DD_URL}/api/v2/reimport-scan/" \
                     -H "Authorization: Token \${DD_API_KEY}" \
                     -F "product_name=${DD_PRODUCT_NAME}" \
+                    -F "product_type_name=${DD_PRODUCT_TYPE}" \
                     -F "engagement_name=${ENGAGEMENT_NAME}" \
                     -F "scan_type=${u.scanType}" \
                     -F "file=@${u.file}" \
